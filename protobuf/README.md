@@ -16,10 +16,17 @@
 - `protoc`：Protocol Buffers 编译器。
 - `protoc-gen-go`：Go 代码生成插件。
 
+本仓库当前和 CI 使用的版本：
+
+- `protoc`：`35.1`
+- `protoc-gen-go`：`v1.36.11`
+
+建议本地生成时使用同一组版本，否则 `generated/new_douyin/new_douyin.pb.go` 头部记录的工具版本不同，CI 会认为生成文件没有同步提交。
+
 安装 `protoc-gen-go`：
 
 ```powershell
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
 ```
 
 确认 `protoc-gen-go` 已经在 `PATH` 中：

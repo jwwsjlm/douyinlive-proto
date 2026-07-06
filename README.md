@@ -38,10 +38,15 @@ go mod tidy
 
 ## 重新生成 Go 代码
 
-先安装 `protoc` 和 `protoc-gen-go`：
+先安装 `protoc` 和 `protoc-gen-go`。本仓库当前和 CI 使用的版本：
+
+- `protoc`：`35.1`
+- `protoc-gen-go`：`v1.36.11`
+
+建议本地版本和 CI 保持一致，否则生成文件头部的版本号可能不同，导致 CI 的生成文件校验失败。
 
 ```powershell
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
 ```
 
 如果本机有 `make`：
