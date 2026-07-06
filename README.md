@@ -38,15 +38,17 @@ go mod tidy
 
 ## 重新生成 Go 代码
 
-先安装 `protoc` 和 `protoc-gen-go`。本仓库当前和 CI 使用的版本：
+先安装 `protoc` 和 `protoc-gen-go`。本仓库的 CI 工具链策略：
 
-- `protoc`：`35.1`
-- `protoc-gen-go`：`v1.36.11`
+- `protoc`：固定为 `35.1`，避免生成文件头部的编译器版本号频繁变化。
+- `protoc-gen-go`：使用 `latest`，跟随 `google.golang.org/protobuf` 最新稳定版本。
 
-建议本地版本和 CI 保持一致，否则生成文件头部的版本号可能不同，导致 CI 的生成文件校验失败。
+建议本地生成时使用同样的 `protoc` 版本，并安装最新的 `protoc-gen-go`，否则生成文件头部的版本号可能不同，导致 CI 的生成文件校验失败。
 
 ```powershell
-go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+protoc-gen-go --version
+protoc --version
 ```
 
 如果本机有 `make`：
@@ -79,9 +81,19 @@ generated/new_douyin/new_douyin.pb.go
 1. 修改 `protobuf/new_douyin.proto`。
 2. 运行 `make proto` 或等价的 `protoc` 命令。
 3. 如果新增了消息类型，同步更新 `generated/struct.go` 和 `generated/messagepool.go`。
-4. 运行 `go test ./...`。
-5. 提交并打 tag，例如 `v0.1.2`。
-6. 业务仓库通过 `go get github.com/jwwsjlm/douyinlive-proto@v0.1.2` 升级。
+4. 运行本地检查：
+
+```powershell
+go test -count=1 ./...
+go vet ./...
+go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+protoc --proto_path=protobuf --go_out=. --go_opt=module=github.com/jwwsjlm/douyinlive-proto protobuf/new_douyin.proto
+git diff --exit-code -- generated/new_douyin/new_douyin.pb.go
+```
+
+5. 如果生成文件只有 `protoc` 版本号不同，先确认本地 `protoc --version` 是否和 CI 固定版本一致。
+6. 提交并打 tag，例如 `v0.1.2`。
+7. 业务仓库通过 `go get github.com/jwwsjlm/douyinlive-proto@v0.1.2` 升级。
 
 ## CI 检查
 
@@ -93,6 +105,7 @@ GitHub Actions 会检查：
 - `staticcheck`
 
 这样可以避免只改了 `.proto`，但忘记提交生成文件。
+本地如果已安装的 `staticcheck` 版本过旧，可以使用 `go run honnef.co/go/tools/cmd/staticcheck@latest ./...` 临时运行最新版。
 
 ## 许可证
 

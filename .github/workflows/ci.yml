@@ -14,7 +14,6 @@ permissions:
 
 env:
   PROTOC_VERSION: "35.1"
-  PROTOC_GEN_GO_VERSION: "v1.36.11"
 
 jobs:
   test:
@@ -38,7 +37,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install protoc-gen-go
-        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@${PROTOC_GEN_GO_VERSION}
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
       - name: Verify generated protobuf
         run: |

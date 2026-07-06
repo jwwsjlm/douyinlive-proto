@@ -16,17 +16,17 @@
 - `protoc`：Protocol Buffers 编译器。
 - `protoc-gen-go`：Go 代码生成插件。
 
-本仓库当前和 CI 使用的版本：
+本仓库的 CI 工具链策略：
 
-- `protoc`：`35.1`
-- `protoc-gen-go`：`v1.36.11`
+- `protoc`：固定为 `35.1`，避免生成文件头部的编译器版本号频繁变化。
+- `protoc-gen-go`：使用 `latest`，跟随 `google.golang.org/protobuf` 最新稳定版本。
 
-建议本地生成时使用同一组版本，否则 `generated/new_douyin/new_douyin.pb.go` 头部记录的工具版本不同，CI 会认为生成文件没有同步提交。
+建议本地生成时使用同样的 `protoc` 版本，并安装最新的 `protoc-gen-go`，否则 `generated/new_douyin/new_douyin.pb.go` 头部记录的工具版本不同，CI 会认为生成文件没有同步提交。
 
 安装 `protoc-gen-go`：
 
 ```powershell
-go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 ```
 
 确认 `protoc-gen-go` 已经在 `PATH` 中：
@@ -94,9 +94,12 @@ option go_package = "github.com/jwwsjlm/douyinlive-proto/generated/new_douyin;ne
 ```powershell
 go test ./...
 go vet ./...
+go run honnef.co/go/tools/cmd/staticcheck@latest ./...
 protoc --proto_path=protobuf --go_out=. --go_opt=module=github.com/jwwsjlm/douyinlive-proto protobuf/new_douyin.proto
 git diff --exit-code -- generated/new_douyin/new_douyin.pb.go
 ```
+
+如果最后一步只显示 `protoc` 版本号差异，先检查本地 `protoc --version` 是否和 CI 固定版本一致。
 
 ## 注意事项
 
