@@ -8185,7 +8185,7 @@ message Webcast {
     message RoomRankMessage {
       Common common = 1;
       repeated RoomRank ranks = 2;
-      Data.Rank audience_ranks = 3;
+      repeated Data.Rank audience_ranks = 3;
 
       message RoomRank {
         Data.User user = 1;

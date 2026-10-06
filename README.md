@@ -32,9 +32,17 @@ import (
 升级依赖示例：
 
 ```powershell
-go get github.com/jwwsjlm/douyinlive-proto@v0.1.1
+go get github.com/jwwsjlm/douyinlive-proto@v0.1.3
 go mod tidy
 ```
+
+## 更新协议定义
+
+当前仓库没有从 `live-schema.js` 自动生成 `new_douyin.proto` 的脚本。更新协议时，需要根据上游 schema 或实际消息校对并修改 `protobuf/new_douyin.proto`，再按下面的命令重新生成 Go 代码；`protoc` 负责将 `.proto` 编译为 Go，不负责从 JavaScript 提取协议。
+
+使用其他转换工具时，请核对字段编号、消息类型和 `repeated` 标记，并保留本仓库的包名及嵌套结构。提交 PR 时应同时提交 `.proto` 和生成的 `.pb.go`。
+
+v0.1.3 修复了 `RoomRankMessage.audience_ranks`：它是 `repeated Data.Rank`，Go 的 `AudienceRanks` 和 `GetAudienceRanks()` 返回 `[]*Webcast_Data_Rank`，JSON 的 `audienceRanks` 返回数组。直接使用这个字段的调用方需要改为遍历切片。
 
 ## 重新生成 Go 代码
 
